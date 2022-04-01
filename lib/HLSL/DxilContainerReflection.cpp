@@ -791,13 +791,13 @@ static bool TryToDetectObjectType(
   EXACT_MATCH(SamplerComparisonState,     D3D_SVT_SAMPLER);
 
   // Note: GS output stream types are supported in the reflection interface.
-  else if(name.startswith("TriangleStream"))    { return ProcessUnhandledObjectType(structType, outObjectType); }
-  else if(name.startswith("PointStream"))       { return ProcessUnhandledObjectType(structType, outObjectType); }
-  else if(name.startswith("LineStream"))        { return ProcessUnhandledObjectType(structType, outObjectType); }
+  else if(name.startswith("TriangleStream<"))    { return ProcessUnhandledObjectType(structType, outObjectType); }
+  else if(name.startswith("PointStream<"))       { return ProcessUnhandledObjectType(structType, outObjectType); }
+  else if(name.startswith("LineStream<"))        { return ProcessUnhandledObjectType(structType, outObjectType); }
 
-  PREFIX_MATCH(AppendStructuredBuffer,    D3D_SVT_APPEND_STRUCTURED_BUFFER);
-  PREFIX_MATCH(ConsumeStructuredBuffer,   D3D_SVT_CONSUME_STRUCTURED_BUFFER);
-  PREFIX_MATCH(ConstantBuffer,            D3D_SVT_CBUFFER);
+  PREFIX_MATCH(AppendStructuredBuffer<,    D3D_SVT_APPEND_STRUCTURED_BUFFER);
+  PREFIX_MATCH(ConsumeStructuredBuffer<,   D3D_SVT_CONSUME_STRUCTURED_BUFFER);
+  PREFIX_MATCH(ConstantBuffer<,            D3D_SVT_CBUFFER);
 
   // Note: the `HLModule` code does this trick to avoid checking more names
   // than it has to, but it doesn't seem 100% correct to do this.
@@ -806,26 +806,35 @@ static bool TryToDetectObjectType(
   name = name.ltrim("RasterizerOrdered");
 
   if(0) {}
-  EXACT_MATCH(ByteAddressBuffer,          D3D_SVT_BYTEADDRESS_BUFFER);
-  EXACT_MATCH(RWByteAddressBuffer,        D3D_SVT_RWBYTEADDRESS_BUFFER);
-  PREFIX_MATCH(Buffer,                    D3D_SVT_BUFFER);
-  PREFIX_MATCH(RWBuffer,                  D3D_SVT_RWBUFFER);
-  PREFIX_MATCH(StructuredBuffer,          D3D_SVT_STRUCTURED_BUFFER);
-  PREFIX_MATCH(RWStructuredBuffer,        D3D_SVT_RWSTRUCTURED_BUFFER);
-  PREFIX_MATCH(Texture1D,                 D3D_SVT_TEXTURE1D);
-  PREFIX_MATCH(RWTexture1D,               D3D_SVT_RWTEXTURE1D);
-  PREFIX_MATCH(Texture1DArray,            D3D_SVT_TEXTURE1DARRAY);
-  PREFIX_MATCH(RWTexture1DArray,          D3D_SVT_RWTEXTURE1DARRAY);
-  PREFIX_MATCH(Texture2D,                 D3D_SVT_TEXTURE2D);
-  PREFIX_MATCH(RWTexture2D,               D3D_SVT_RWTEXTURE2D);
-  PREFIX_MATCH(Texture2DArray,            D3D_SVT_TEXTURE2DARRAY);
-  PREFIX_MATCH(RWTexture2DArray,          D3D_SVT_RWTEXTURE2DARRAY);
-  PREFIX_MATCH(Texture3D,                 D3D_SVT_TEXTURE3D);
-  PREFIX_MATCH(RWTexture3D,               D3D_SVT_RWTEXTURE3D);
-  PREFIX_MATCH(TextureCube,               D3D_SVT_TEXTURECUBE);
-  PREFIX_MATCH(TextureCubeArray,          D3D_SVT_TEXTURECUBEARRAY);
-  PREFIX_MATCH(Texture2DMS,               D3D_SVT_TEXTURE2DMS);
-  PREFIX_MATCH(Texture2DMSArray,          D3D_SVT_TEXTURE2DMSARRAY);
+  EXACT_MATCH(ByteAddressBuffer,           D3D_SVT_BYTEADDRESS_BUFFER);
+  EXACT_MATCH(RWByteAddressBuffer,         D3D_SVT_RWBYTEADDRESS_BUFFER);
+  EXACT_MATCH(Texture1D,                   D3D_SVT_TEXTURE1D);
+  EXACT_MATCH(Texture1DArray,              D3D_SVT_TEXTURE1DARRAY);
+  EXACT_MATCH(Texture2D,                   D3D_SVT_TEXTURE2D);
+  EXACT_MATCH(Texture2DArray,              D3D_SVT_TEXTURE2DARRAY);
+  EXACT_MATCH(Texture3D,                   D3D_SVT_TEXTURE3D);
+  EXACT_MATCH(TextureCube,                 D3D_SVT_TEXTURECUBE);
+  EXACT_MATCH(TextureCubeArray,            D3D_SVT_TEXTURECUBEARRAY);
+  EXACT_MATCH(Texture2DMS,                 D3D_SVT_TEXTURE2DMS);
+  EXACT_MATCH(Texture2DMSArray,            D3D_SVT_TEXTURE2DMSARRAY);
+  PREFIX_MATCH(Buffer<,                    D3D_SVT_BUFFER);
+  PREFIX_MATCH(RWBuffer<,                  D3D_SVT_RWBUFFER);
+  PREFIX_MATCH(StructuredBuffer<,          D3D_SVT_STRUCTURED_BUFFER);
+  PREFIX_MATCH(RWStructuredBuffer<,        D3D_SVT_RWSTRUCTURED_BUFFER);
+  PREFIX_MATCH(Texture1D<,                 D3D_SVT_TEXTURE1D);
+  PREFIX_MATCH(RWTexture1D<,               D3D_SVT_RWTEXTURE1D);
+  PREFIX_MATCH(Texture1DArray<,            D3D_SVT_TEXTURE1DARRAY);
+  PREFIX_MATCH(RWTexture1DArray<,          D3D_SVT_RWTEXTURE1DARRAY);
+  PREFIX_MATCH(Texture2D<,                 D3D_SVT_TEXTURE2D);
+  PREFIX_MATCH(RWTexture2D<,               D3D_SVT_RWTEXTURE2D);
+  PREFIX_MATCH(Texture2DArray<,            D3D_SVT_TEXTURE2DARRAY);
+  PREFIX_MATCH(RWTexture2DArray<,          D3D_SVT_RWTEXTURE2DARRAY);
+  PREFIX_MATCH(Texture3D<,                 D3D_SVT_TEXTURE3D);
+  PREFIX_MATCH(RWTexture3D<,               D3D_SVT_RWTEXTURE3D);
+  PREFIX_MATCH(TextureCube<,               D3D_SVT_TEXTURECUBE);
+  PREFIX_MATCH(TextureCubeArray<,          D3D_SVT_TEXTURECUBEARRAY);
+  PREFIX_MATCH(Texture2DMS<,               D3D_SVT_TEXTURE2DMS);
+  PREFIX_MATCH(Texture2DMSArray<,          D3D_SVT_TEXTURE2DMSARRAY);
 
 #undef EXACT_MATCH
 #undef PREFIX_MATCH
@@ -892,7 +901,7 @@ HRESULT CShaderReflectionType::Initialize(
     // field and the variable store the same offset information, and
     // we need to zero out the value in the type to avoid the user
     // of the reflection interface seeing 2x the correct value.
-    m_Desc.Offset = typeAnnotation.GetCBufferOffset() - baseOffset;
+    m_Desc.Offset = typeAnnotation.GetCBufferOffset();
   } else {
     m_Desc.Offset = baseOffset;
   }
@@ -1096,7 +1105,7 @@ HRESULT CShaderReflectionType::Initialize(
     // A struct type might be an ordinary user-defined `struct`,
     // or one of the builtin in HLSL "object" types.
     StructType *structType = cast<StructType>(type);
-    const StructLayout *structLayout = isCBuffer ? nullptr :
+    const StructLayout *structLayout =
       M.GetModule()->getDataLayout().getStructLayout(structType);
 
     // We use our function to try to detect an object type
@@ -1258,7 +1267,6 @@ void CShaderReflectionConstantBuffer::Initialize(
   m_ReflectionName = CB.GetGlobalName();
   m_Desc.Name = m_ReflectionName.c_str();
   m_Desc.Size = CB.GetSize();
-  m_Desc.Size = (m_Desc.Size + 0x0f) & ~(0x0f); // Round up to 16 bytes for reflection.
   m_Desc.Type = D3D_CT_CBUFFER;
   m_Desc.uFlags = 0;
   // For ConstantBuffer<> buf[2], the array size is in Resource binding count
