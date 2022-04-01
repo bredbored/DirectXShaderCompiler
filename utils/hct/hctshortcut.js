@@ -30,7 +30,7 @@ binPath = binPath + "\\hlsl.bin";
 var desktopPath = shell.SpecialFolders("Desktop");
 var shortcut = shell.CreateShortcut(desktopPath + "\\" + linkName + ".lnk");
 shortcut.TargetPath = shell.ExpandEnvironmentStrings("%windir%\\System32\\cmd.exe");
-shortcut.Arguments = "/k " + hctStartPath + " " + srcPath + " " + binPath;
+shortcut.Arguments = "/k \"\"" + hctStartPath + "\" \"" + srcPath + "\" \"" + binPath + "\"\"";
 shortcut.Save();
 
 WScript.Echo("Shortcut '" + linkName + "' created on desktop.");

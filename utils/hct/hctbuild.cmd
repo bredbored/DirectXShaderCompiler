@@ -8,15 +8,17 @@ if "%1"=="--help" goto :showhelp
 
 setlocal
 
-if "%HLSL_SRC_DIR%"=="" (
-  echo Missing source directory.
-  if exist %~dp0..\..\LLVMBuild.txt (
-    set HLSL_SRC_DIR=%~dp0..\..
-    echo Source directory deduced to be %~dp0..\..
-  ) else (
-    exit /b 1
-  )
+if not "%HLSL_SRC_DIR%"=="" goto :src_set
+
+echo Missing source directory.
+if exist %~dp0..\..\LLVMBuild.txt (
+  set HLSL_SRC_DIR=%~dp0..\..
+  echo Source directory deduced to be %~dp0..\..
+) else (
+  exit /b 1
 )
+
+:src_set
 
 if "%BUILD_ARCH%"=="" (
   set BUILD_ARCH=Win32
@@ -368,7 +370,7 @@ if /i "%BUILD_ARCH%"=="Win32" (
   set BUILD_TOOLS=amd64_arm64
 )
 
-call :configandbuild %BUILD_CONFIG% %BUILD_ARCH% %HLSL_BLD_DIR% "%BUILD_GENERATOR%" "%VS2019ARCH%"
+call :configandbuild %BUILD_CONFIG% %BUILD_ARCH% "%HLSL_BLD_DIR%" "%BUILD_GENERATOR%" "%VS2019ARCH%"
 if errorlevel 1 exit /b 1
 
 if "%BUILD_GENERATOR%"=="Ninja" (
@@ -383,7 +385,7 @@ exit /b 0
 echo Builds HLSL solutions and the product and test binaries for the current
 echo flavor and architecture.
 echo.
-echo hctbuild [-s or -b] [-alldef] [-analyze] [-official] [-fv] [-fvloc <path>] [-rel] [-arm or -arm64 or -x86 or -x64] [-Release] [-Debug] [-vs2017] [-vs2019] [-ninja] [-tblgen path] [-speak-up] [-no-parallel] [-no-dxilconv] [-update-generated-sources]
+echo hctbuild [-s or -b] [-alldef] [-analyze] [-official] [-fv] [-fvloc ^<path^>] [-rel] [-arm or -arm64 or -x86 or -x64] [-Release] [-Debug] [-vs2017] [-vs2019] [-ninja] [-tblgen path] [-speak-up] [-no-parallel] [-no-dxilconv] [-update-generated-sources]
 echo.
 echo   -s   creates the projects only, without building
 echo   -b   builds the existing project
@@ -400,7 +402,7 @@ echo   -no-dxilconv   disables build of DXBC to DXIL converter and tools
 echo   -vs2017        uses Visual Studio 2017 to build
 echo   -vs2019        uses Visual Studio 2019 to build
 echo   -vs2022        uses Visual Studio 2022 to build
-echo
+echo.
 echo   -update-generated-soures   Updates generated soures in the source tree
 echo.
 echo current BUILD_ARCH=%BUILD_ARCH%.  Override with:
@@ -443,32 +445,32 @@ if not exist %3 (
 )
 cd /d %3
 if "%DO_SETUP%"=="1" (
-  echo Creating solution files for %2, logging to %3\cmake-log.txt
+  echo Creating solution files for %2, logging to "%~3\cmake-log.txt"
   if "%BUILD_GENERATOR%"=="Ninja" (
-    echo Running "%CMAKE_PATH%" -DCMAKE_BUILD_TYPE:STRING=%1 %CMAKE_OPTS% -G %4 %HLSL_SRC_DIR% > %3\cmake-log.txt
-    "%CMAKE_PATH%" -DCMAKE_BUILD_TYPE:STRING=%1 %CMAKE_OPTS% -G %4 %HLSL_SRC_DIR% >> %3\cmake-log.txt 2>&1
+    echo Running "%CMAKE_PATH%" -DCMAKE_BUILD_TYPE:STRING=%1 %CMAKE_OPTS% -G %4 "%HLSL_SRC_DIR%" > "%~3\cmake-log.txt"
+    "%CMAKE_PATH%" -DCMAKE_BUILD_TYPE:STRING=%1 %CMAKE_OPTS% -G %4 "%HLSL_SRC_DIR%" >> "%~3\cmake-log.txt" 2>&1
   ) else (
     rem -DCMAKE_BUILD_TYPE:STRING=%1 is not necessary for multi-config generators like VS
-    echo Running "%CMAKE_PATH%" %CMAKE_OPTS% -G %4 %5 %HLSL_SRC_DIR% > %3\cmake-log.txt
-    "%CMAKE_PATH%" %CMAKE_OPTS% -G %4 %5 %HLSL_SRC_DIR% >> %3\cmake-log.txt 2>&1
+    echo Running "%CMAKE_PATH%" %CMAKE_OPTS% -G %4 %5 "%HLSL_SRC_DIR%" > "%~3\cmake-log.txt"
+    "%CMAKE_PATH%" %CMAKE_OPTS% -G %4 %5 "%HLSL_SRC_DIR%" >> "%~3\cmake-log.txt" 2>&1
   )
   if %SHOW_CMAKE_LOG%==1 (
-    echo ------- Start of %3\cmake-log.txt -------
-    type %3\cmake-log.txt
-    echo -------- End of %3\cmake-log.txt --------
+    echo ------- Start of "%~3\cmake-log.txt" -------
+    type "%~3\cmake-log.txt"
+    echo -------- End of "%~3\cmake-log.txt" --------
   )
   if errorlevel 1 (
     echo Failed to configure cmake projects.
     echo ===== begin cmake-log.txt =====
-    type %3\cmake-log.txt
+    type "%~3\cmake-log.txt"
     echo ===== end cmake-log.txt =====
-    echo Run 'cmake %HLSL_SRC_DIR%' in %3 will continue project generation after fixing the issue.
+    echo Run 'cmake "%HLSL_SRC_DIR%"' in %3 will continue project generation after fixing the issue.
     cmake --version | findstr 3.4
     if errorlevel 1 (
       echo CMake 3.4 is the currently supported version - your installed cmake may be out of date.
       echo See README.md at the root for an explanation of dependencies.
     )
-    findstr -c:"Could NOT find D3D12" %3\cmake-log.txt >NUL
+    findstr -c:"Could NOT find D3D12" "%~3\cmake-log.txt" >NUL
     if errorlevel 1 (
       rem D3D12 has been found, nothing to diagnose here.
     ) else (
@@ -507,12 +509,12 @@ exit /b 1
 
 :handlefail
 if %SPEAK%==1 (
-  cscript.exe //Nologo %HLSL_SRC_DIR%\utils\hct\hctspeak.js /say:"build failed"
+  cscript.exe //Nologo "%HLSL_SRC_DIR%\utils\hct\hctspeak.js" /say:"build failed"
 )
 exit /b 0
 
 :handlesuccess
 if %SPEAK%==1 (
-  cscript.exe //Nologo %HLSL_SRC_DIR%\utils\hct\hctspeak.js /say:"build succeeded"
+  cscript.exe //Nologo "%HLSL_SRC_DIR%\utils\hct\hctspeak.js" /say:"build succeeded"
 )
 exit /b 0

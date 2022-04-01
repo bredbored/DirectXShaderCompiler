@@ -1,26 +1,26 @@
 @echo off
 
-if "%1"=="/?" goto :showhelp
-if "%1"=="-?" goto :showhelp
-if "%1"=="-help" goto :showhelp
-if "%1"=="--help" goto :showhelp
+if "%~1"=="/?" goto :showhelp
+if "%~1"=="-?" goto :showhelp
+if "%~1"=="-help" goto :showhelp
+if "%~1"=="--help" goto :showhelp
 
 rem Default build arch is x64
 if "%BUILD_ARCH%"=="" (
   set BUILD_ARCH=x64
 )
 
-if "%1"=="-x86" (
+if "%~1"=="-x86" (
   set BUILD_ARCH=Win32
-) else if "%1"=="-Win32" (
+) else if "%~1"=="-Win32" (
   set BUILD_ARCH=Win32
-) else if "%1"=="-x64" (
+) else if "%~1"=="-x64" (
   set BUILD_ARCH=x64
-) else if "%1"=="-amd64" (
+) else if "%~1"=="-amd64" (
   set BUILD_ARCH=x64
-) else if "%1"=="-arm" (
+) else if "%~1"=="-arm" (
   set BUILD_ARCH=ARM
-) else if "%1"=="-arm64" (
+) else if "%~1"=="-arm64" (
   set BUILD_ARCH=ARM64
 ) else (
   goto :donearch
@@ -33,11 +33,11 @@ rem Set the following environment variable globally, or start Visual Studio
 rem from this command line in order to use 64-bit tools.
 set PreferredToolArchitecture=x64
 
-if "%1"=="" (
+if "%~1"=="" (
   echo Source directory missing.
   goto :showhelp
 )
-if "%2"=="" (
+if "%~2"=="" (
   echo Build directory missing.
   goto :showhelp
 )
@@ -58,18 +58,18 @@ echo.
 
 echo Setting up macros for this console - run hcthelp for a reference.
 echo.
-doskey hctbld=pushd %HLSL_BLD_DIR%
-doskey hctbuild=%HLSL_SRC_DIR%\utils\hct\hctbuild.cmd $*
-doskey hctcheckin=%HLSL_SRC_DIR%\utils\hct\hctcheckin.cmd $*
-doskey hctclean=%HLSL_SRC_DIR%\utils\hct\hctclean.cmd $*
-doskey hcthelp=%HLSL_SRC_DIR%\utils\hct\hcthelp.cmd $*
-doskey hctshortcut=cscript.exe //Nologo %HLSL_SRC_DIR%\utils\hct\hctshortcut.js $*
-doskey hctspeak=cscript.exe //Nologo %HLSL_SRC_DIR%\utils\hct\hctspeak.js $*
-doskey hctsrc=pushd %HLSL_SRC_DIR%
-doskey hcttest=%HLSL_SRC_DIR%\utils\hct\hcttest.cmd $*
-doskey hcttools=pushd %HLSL_SRC_DIR%\utils\hct
-doskey hcttodo=cscript.exe //Nologo %HLSL_SRC_DIR%\utils\hct\hcttodo.js $*
-doskey hctvs=%HLSL_SRC_DIR%\utils\hct\hctvs.cmd $*
+doskey hctbld=pushd "%HLSL_BLD_DIR%"
+doskey hctbuild="%HLSL_SRC_DIR%\utils\hct\hctbuild.cmd" $*
+doskey hctcheckin="%HLSL_SRC_DIR%\utils\hct\hctcheckin.cmd" $*
+doskey hctclean="%HLSL_SRC_DIR%\utils\hct\hctclean.cmd" $*
+doskey hcthelp="%HLSL_SRC_DIR%\utils\hct\hcthelp.cmd" $*
+doskey hctshortcut=cscript.exe //Nologo "%HLSL_SRC_DIR%\utils\hct\hctshortcut.js" $*
+doskey hctspeak=cscript.exe //Nologo "%HLSL_SRC_DIR%\utils\hct\hctspeak.js" $*
+doskey hctsrc=pushd "%HLSL_SRC_DIR%"
+doskey hcttest="%HLSL_SRC_DIR%\utils\hct\hcttest.cmd" $*
+doskey hcttools=pushd "%HLSL_SRC_DIR%\utils\hct"
+doskey hcttodo=cscript.exe //Nologo "%HLSL_SRC_DIR%\utils\hct\hcttodo.js" $*
+doskey hctvs="%HLSL_SRC_DIR%\utils\hct\hctvs.cmd" $*
 
 call :checksdk
 if errorlevel 1 (
@@ -99,7 +99,7 @@ if errorlevel 1 (
   call :findgit
 )
 
-pushd %HLSL_SRC_DIR%
+pushd "%HLSL_SRC_DIR%"
 
 goto :eof
 
@@ -149,7 +149,7 @@ if "%HLSL_TAEF_MINTE%"=="" (
 echo Found TAEF at %HLSL_TAEF_MINTE%
 set HLSL_TAEF_DIR=%HLSL_BLD_DIR%\TAEF
 echo Copying to %HLSL_TAEF_DIR% for use with AgilitySDK
-mkdir "%HLSL_TAEF_DIR%\%BUILD_ARCH:Win32=x86%"" 1>nul 2>nul
+mkdir "%HLSL_TAEF_DIR%\%BUILD_ARCH:Win32=x86%" 1>nul 2>nul
 robocopy /NP /NJH /NJS /S "%HLSL_TAEF_MINTE%" "%HLSL_TAEF_DIR%\%BUILD_ARCH:Win32=x86%" *
 set path=%path%;%HLSL_TAEF_DIR%\%BUILD_ARCH:Win32=x86%
 goto:eof
